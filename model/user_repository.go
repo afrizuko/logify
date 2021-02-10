@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type (
 	User struct {
@@ -35,23 +39,45 @@ func NewUserRepository() *UserRepositoryImpl {
 }
 
 func (ur *UserRepositoryImpl) GetUsers(page, limit int) ([]User, error) {
-
-	return nil, nil
+	var users []User
+	err := ur.DB.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (ur *UserRepositoryImpl) UpdateUser(u *User) error {
-
+	if u == nil {
+		return errors.New("Invalid user reference")
+	}
+	if err := ur.DB.Save(u).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
 func (ur *UserRepositoryImpl) SaveUser(u *User) error {
+	if u == nil {
+		return errors.New("Invalid user reference")
+	}
+	if err := ur.DB.Create(u).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
 func (ur *UserRepositoryImpl) GetUser(id uint) (*User, error) {
-	return nil, nil
+	var user User
+	if err := ur.DB.First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (ur *UserRepositoryImpl) DeleteUser(id uint) error {
+	if err := ur.DB.Delete(&User{}, id).Error; err != nil {
+		return err
+	}
 	return nil
 }
