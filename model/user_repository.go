@@ -19,7 +19,7 @@ type (
 		GetUser(id uint) (*User, error)
 		SaveUser(u *User) error
 		UpdateUser(u *User) error
-		DeleteUser(u *User) error
+		DeleteUser(id uint) error
 	}
 )
 
@@ -52,6 +52,6 @@ func (ur *UserRepositoryImpl) GetUser(id uint) (*User, error) {
 	return nil, nil
 }
 
-func (ur *UserRepositoryImpl) DeleteUser(u *User) error {
+func (ur *UserRepositoryImpl) DeleteUser(id uint) error {
 	return nil
 }

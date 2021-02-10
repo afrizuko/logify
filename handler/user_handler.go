@@ -2,12 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/afrizuko/logly/model"
+	"github.com/afrizuko/logify/model"
 	"github.com/xujiajun/gorouter"
 )
 
@@ -17,12 +16,6 @@ type UserHandler struct {
 }
 
 func NewUserHandler(repo model.UserRepository) *UserHandler {
-	handler := new(UserHandler)
-	handler.repository = repo
-	return handler
-}
-
-func DefaultUserHandler(repo model.UserRepository) *UserHandler {
 	handler := new(UserHandler)
 	handler.repository = repo
 	mux := gorouter.New()
@@ -41,8 +34,13 @@ func (h *UserHandler) Routes(mux *gorouter.Router) {
 }
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	id := gorouter.GetParam(r, "id")
-	fmt.Fprintf(w, id)
+	id, _ := strconv.ParseUint(gorouter.GetParam(r, "id"), 10, 64)
+
+	if err := h.repository.DeleteUser(uint(id)); err != nil {
+		renderJSON(404, w, err)
+		return
+	}
+	renderJSON(202, w, nil)
 }
 
 func (h *UserHandler) ModifyUser(w http.ResponseWriter, r *http.Request) {
@@ -83,8 +81,10 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func renderJSON(statusCode int, w http.ResponseWriter, data interface{}) {
 	w.WriteHeader(statusCode)
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
+	if data == nil {
+		return
+	}
+	if err := json.NewEncoder(w).Encode(data); err != nil {
 		log.Println(err)
 	}
 }

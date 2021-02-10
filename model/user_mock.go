@@ -52,6 +52,10 @@ func (ur *UserMockImpl) GetUser(id uint) (*User, error) {
 	return nil, errors.New("User not found")
 }
 
-func (ur *UserMockImpl) DeleteUser(u *User) error {
-	return nil
+func (ur *UserMockImpl) DeleteUser(id uint) error {
+	if _, ok := ur.users[id]; ok {
+		delete(ur.users, id)
+		return nil
+	}
+	return errors.New("User not found")
 }

@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/afrizuko/logly/model"
+	"github.com/afrizuko/logify/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +14,7 @@ var handler *UserHandler
 
 func init() {
 	service := model.NewUserMockImpl(5)
-	handler = DefaultUserHandler(service)
+	handler = NewUserHandler(service)
 }
 
 func TestGetUsers(t *testing.T) {
@@ -100,7 +100,23 @@ func TestUpdateUser(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "John", user.Username)
 	})
+}
 
+func TestDeleteUser(t *testing.T) {
+
+	t.Run("it returns 200 for deleting a user", func(t *testing.T) {
+		r := httptest.NewRequest("DELETE", "/users/6", nil)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, r)
+		assert.Equal(t, 202, w.Result().StatusCode)
+	})
+
+	t.Run("it returns a single user by id", func(t *testing.T) {
+		r := httptest.NewRequest("GET", "/users/6", nil)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, r)
+		assert.Equal(t, 404, w.Result().StatusCode)
+	})
 }
 
 func newUser(t *testing.T, name string) *bytes.Buffer {

@@ -1,4 +1,4 @@
-module github.com/afrizuko/logly
+module github.com/afrizuko/logify
 
 go 1.15
 
