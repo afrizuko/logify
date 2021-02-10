@@ -43,7 +43,7 @@ func TestGetUser(t *testing.T) {
 	})
 
 	t.Run("it returns a user not found", func(t *testing.T) {
-		r := httptest.NewRequest("GET", "/users/0", nil)
+		r := httptest.NewRequest("GET", "/users/10", nil)
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, r)
 		assert.Equal(t, 404, w.Result().StatusCode)
